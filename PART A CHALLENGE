@@ -1,0 +1,52 @@
+import java.util.HashMap;
+import java.util.Map;
+
+public class sahacode {
+    public static void partA() {
+        int totalCombinations = 6 * 6;
+        System.out.println("Total combinations possible: " + totalCombinations);
+        int[][] combinations = new int[11][];
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                int sum = i + j + 2; // Sum ranges from 2 to 12
+                if (combinations[sum - 2] == null) {
+                    combinations[sum - 2] = new int[1];
+                } else {
+                    int[] temp = new int[combinations[sum - 2].length + 1];
+                    System.arraycopy(combinations[sum - 2], 0, temp, 0, combinations[sum - 2].length);
+                    combinations[sum - 2] = temp;
+                }
+                combinations[sum - 2][combinations[sum - 2].length - 1] = i * 10 + j; 
+            }
+        }
+        System.out.println("Distribution of all possible combinations:");
+        for (int i = 0; i < combinations.length; i++) {
+            if (combinations[i] != null) {
+                int numberOfCombinations = combinations[i].length;
+                System.out.print("Sum = " + (i + 2) + ": ");
+                for (int combination : combinations[i]) {
+                    System.out.print((combination / 10 + 1) + " + " + (combination % 10 + 1) + " ");
+                }
+                System.out.println(" (Number of Combinations = " + numberOfCombinations + ")");
+            }
+        }
+        Map<Integer, Double> sumProbabilities = new HashMap<>();
+        for (int i = 0; i < combinations.length; i++)
+        {
+            if (combinations[i] != null) {
+                int numberOfCombinations = combinations[i].length;
+                sumProbabilities.put(i + 2, (double) numberOfCombinations / totalCombinations);
+            }
+        }
+        System.out.println("Probability of each sum occurring:");
+        for (Map.Entry<Integer, Double> entry : sumProbabilities.entrySet()) {
+            String formattedProbability = String.format("%.3f",entry.getValue());
+            System.out.println("P(Sum = " + entry.getKey() + ") = " + formattedProbability);
+        }
+    }
+    public static void main(String[] args) {
+        System.out.println("Part A:");
+        partA();
+
+    }
+}
