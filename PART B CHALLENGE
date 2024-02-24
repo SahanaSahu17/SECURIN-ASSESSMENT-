@@ -1,0 +1,108 @@
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+public class dicee {
+    public static void main(String[] args) {
+        int[] dieA = {1, 2, 3, 4, 5, 6};
+        int[] dieB = Arrays.copyOf(dieA, dieA.length);
+        int[] newDieA, newDieB;
+        UndoomResult undoomResult = undoom_dice(dieA, dieB);
+        newDieA = undoomResult.getNewDieA();
+        newDieB = undoomResult.getNewDieB();
+        System.out.println("Original Die A: " + Arrays.toString(dieA));
+        System.out.println("Original Die B: " + Arrays.toString(dieB));
+        System.out.println("New Die A: " + Arrays.toString(newDieA));
+        System.out.println("New Die B: " + Arrays.toString(newDieB));
+        partA(newDieA, newDieB);
+    }
+    public static void partA(int[] newDieA, int[] newDieB) {
+        int[] a = newDieA;
+        int[] b = newDieB;
+        int[][] ne = new int[6][6];
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                ne[i][j] = a[i] + b[j];
+            }
+        }
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                System.out.print(ne[i][j] + "  ");
+            }
+            System.out.println();
+        }
+
+        // we Calculate and display the distribution of all possible combinations
+        System.out.println("Distribution of all possible combinations:");
+        Map<Integer, Integer> distribution = calculateDistribution(a, b);
+        displayDistribution(distribution);
+
+        // we Calculate the Probability of all Possible Sums
+        System.out.println("\nProbability of each sum occurring:");
+        int totalCombinations = calculateTotalCombinations(distribution);
+        calculateAndDisplayProbabilities(distribution, totalCombinations);
+    }
+    public static Map<Integer, Integer> calculateDistribution(int[] dieA, int[] dieB) {
+        Map<Integer, Integer> distribution = new HashMap<>();
+        for (int faceA : dieA) {
+            for (int faceB : dieB) {
+                int sum = faceA + faceB;
+                distribution.put(sum, distribution.getOrDefault(sum, 0) + 1);
+            }
+        }
+        return distribution;
+    }
+    public static void displayDistribution(Map<Integer, Integer> distribution) {
+        for (Map.Entry<Integer, Integer> entry : distribution.entrySet()) {
+            System.out.println("Sum = " + entry.getKey() + ": " + entry.getValue() + " combinations");
+        }
+    }
+    public static int calculateTotalCombinations(Map<Integer, Integer> distribution) {
+        int total = 0;
+        for (int count : distribution.values()) {
+            total += count;
+        }
+        return total;
+    }
+    public static void calculateAndDisplayProbabilities(Map<Integer, Integer> distribution, int totalCombinations) {
+        for (Map.Entry<Integer, Integer> entry : distribution.entrySet()) {
+            double probability = (double) entry.getValue() / totalCombinations;
+            String formattedProbability = String.format("%.3f", probability);
+            System.out.println("P(Sum = " + entry.getKey() + ") = " + formattedProbability);
+        }
+    }
+    static class UndoomResult {
+        private int[] newDieA;
+        private int[] newDieB;
+        public UndoomResult(int[] newDieA, int[] newDieB) {
+            this.newDieA = newDieA;
+            this.newDieB = newDieB;
+        }
+        public int[] getNewDieA() {
+            return newDieA;
+        }
+        public int[] getNewDieB() {
+            return newDieB;
+        }
+    }
+    private static UndoomResult undoom_dice(int[] dieA, int[] dieB) {
+        int[] newDieA = new int[6];
+        int[] newDieB = new int[6];
+        for (int i = 0; i < 6; i++) {
+            int spotsOnFaceA = dieA[i];
+            if (spotsOnFaceA > 4) {
+                newDieA[i] = 4;  // Limit spots on Die A to 4
+            } else {
+                newDieA[i] = spotsOnFaceA;
+            }
+        }
+        int adjustment = 0;
+        for (int i = 0; i < 6; i++) {
+            adjustment += (6 - newDieA[i]);
+        }
+        for (int i = 0; i < 6; i++) {
+            int spotsOnFaceB = i + 7;
+            newDieB[i] = spotsOnFaceB;
+        }
+        return new UndoomResult(newDieA, newDieB);
+    }
+}
